@@ -1,0 +1,57 @@
+h1 {
+    color: red;
+}
+
+.special {
+    color: orange;
+    font-weight: bold;
+  }
+
+p {
+    color: green;
+}
+
+body {
+    background-color: pink;
+  }
+
+@media (min-width: 30em) {
+    body {
+      background-color: blue;
+    }
+}
+
+  /* h1 + p {
+    font-size: 200%;
+  }
+
+li {
+    list-style-type: square;
+}
+
+li em {
+    color: rebeccapurple;
+  }
+
+p span {
+    color: red;
+} */
+
+/* body h1 + p .special {
+    color: yellow;
+    background-color: black;
+    padding: 5px;
+  } */
+
+/* a:link {
+    color: orangered;
+    font-weight: bold;
+}
+
+a:visited {
+    color: green;
+}
+
+a:hover {
+    text-decoration: none;
+  } */
