@@ -1,3 +1,8 @@
+## MDN examples
+
+This is a fork of MDN Learning Area examples and exercises for my own practice. (Original ReadMe below)
+
+---
 # learning-area
 Github repo for the [MDN Learning Area](https://developer.mozilla.org/en-US/Learn).
 
