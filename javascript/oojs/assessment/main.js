@@ -13,12 +13,19 @@ function random(min, max) {
   return num;
 }
 
-class Ball {
-  constructor(x, y, velX, velY, color, size) {
+class Shape {
+  constructor(x, y, velX, velY, exists) {
     this.x = x;
     this.y = y;
     this.velX = velX;
     this.velY = velY;
+    this.exists = exists;
+  }
+}
+
+class Ball extends Shape {
+  constructor(x, y, velX, velY, exists, color, size) {
+    super(x, y, velX, velY, exists);
     this.color = color;
     this.size = size;
   }
@@ -79,6 +86,7 @@ while (balls.length < 25) {
     random(0 + size, height - size), //y
     random(-7, 7), //velX
     random(-7, 7), //velY
+    true, //exists
     'rgb(' + random(0, 255) + ',' + random(0, 255) + ',' + random(0, 255) + ')', //color
     size
   );
