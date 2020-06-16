@@ -1,218 +1,208 @@
 <!DOCTYPE html>
-<html lang="en-US">
-  <head>
+<html>
+
+<head>
     <meta charset="utf-8">
     <title>2-player reaction game</title>
     <style>
+        /* General styles */
 
-      /* General styles */
+        html {
+            background-color: white;
+            height: 100%;
+            font-family: sans-serif;
+        }
 
-      html {
-        background-color: white;
-        height: 100%;
-        font-family: sans-serif;
-      }
+        body {
+            height: inherit;
+            background-color: red;
+            margin: 0;
+        }
 
-      body {
-        height: inherit;
-        background-color: red;
-        margin: 0;
-      }
+        * {
+            box-sizing: border-box;
+        }
 
-      * {
-        box-sizing: border-box;
-      }
+        /* UI Layout */
 
-      /* UI Layout */
+        section {
+            width: 100%;
+            height: inherit;
+            padding: 30px;
+        }
 
-      section {
-        width: 100%;
-        height: inherit;
-        padding: 30px;
-      }
+        .topbar {
+            height: 50%;
+            display: flex;
+            justify-content: space-between;
+        }
 
-      .topbar {
-        height: 50%;
-        display: flex;
-        justify-content: space-between;
-      }
+        .topbar p,
+        button {
+            margin: 0;
+            font-size: 1.5rem;
+            border: 5px solid;
+            border-radius: 20px;
+            padding: 10px 20px;
+        }
 
-      .topbar p, button {
-        margin: 0;
-        font-size: 1.5rem;
-        border: 5px solid;
-        border-radius: 20px;
-        padding: 10px 20px;
-      }
+        .p1,
+        .p2 {
+            align-self: flex-start;
+        }
 
-      .p1, .p2 {
-        align-self: flex-start;
-      }
+        .topbar .p1 {
+            order: 0;
+            border-color: yellow;
+            color: yellow;
+        }
 
-      .topbar .p1 {
-        order: 0;
-        border-color: yellow;
-        color: yellow;
-      }
+        .topbar .p2 {
+            order: 2;
+            border-color: cyan;
+            color: cyan;
+        }
 
-      .topbar .p2 {
-        order: 2;
-        border-color: cyan;
-        color: cyan;
-      }
+        .topbar .middlebar {
+            order: 1;
+        }
 
-      .topbar .middlebar {
-        order: 1;
-      }
+        .middlebar {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+        }
 
-      .middlebar {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: space-between;
-      }
+        /* Button-specific styling */
 
-      /* Button-specific styling */
+        button {
+            border: 0;
+            padding: 12.75px 20px;
+            background-color: #ddd;
+            cursor: pointer;
+        }
 
-      button {
-        border: 0;
-        padding: 12.75px 20px;
-        background-color: #ddd;
-        cursor: pointer;
-      }
+        button:hover,
+        button:focus {
+            background-color: #eee;
+        }
 
-      button:hover, button:focus {
-        background-color: #eee;
-      }
+        button:active {
+            background-color: #fff;
+        }
 
-      button:active {
-        background-color: #fff;
-      }
+        /* spinner-specific styling */
 
-      /* spinner-specific styling */
+        .spinner {
+            position: absolute;
+            z-index: 1;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+        }
 
-      .spinner {
-        position: absolute;
-        z-index: 1;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-      }
+        .spinner div {
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
 
-      .spinner div {
-        height: 100%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-      }
-
-      .spinner p {
-        margin: 0;
-        font-size: 10rem;
-      }
+        .spinner p {
+            margin: 0;
+            font-size: 10rem;
+        }
     </style>
-  </head>
-  <body>
+</head>
 
-    <div class="spinner"><div><p>↻</p></div></div>
+<body>
+
+    <div class="spinner">
+        <div>
+            <p>↻</p>
+        </div>
+    </div>
 
     <section class="ui">
-      <div class="topbar">
-        <p class="p1">Player 1: "A"</p>
-        <p class="p2">Player 2: "L"</p>
-        <div class="middlebar">
-          <button>Start game</button>
-          <p class="result"></p>
+        <div class="topbar">
+            <p class="p1">Player 1: "A"</p>
+            <p class="p2">Player 2: "L"</p>
+            <div class="middlebar">
+                <button>Start game</button>
+                <p class="result"></p>
+            </div>
         </div>
-      </div>
     </section>
     <script>
+        const spinner = document.querySelector('.spinner p');
+        const spinnerContainer = document.querySelector('.spinner'); // container for showing and hiding spinner
+        let rotateCount = 0;
+        let startTime = null;
+        let rAF;
+        const btn = document.querySelector('button');
+        const result = document.querySelector('.result');
 
-      // Store reference to the spinner and spinner container, create a rotate counter and null startTime
-      // and create an uninitialized variable to store a requestAnimationFrame() call in,
-      const spinner = document.querySelector('.spinner p');
-      const spinnerContainer = document.querySelector('.spinner');
-      let rotateCount = 0;
-      let startTime = null;
-      let rAF;
-
-      // Store references to the start button and the result paragraph
-      const btn = document.querySelector('button');
-      const result = document.querySelector('.result');
-
-      // function to generate random number
-      function random(min,max) {
-        var num = Math.floor(Math.random()*(max-min)) + min;
-        return num;
-      }
-
-      // Create a draw() function
-      function draw(timestamp) {
-        if(!startTime) {
-         startTime = timestamp;
+        function random(min, max){
+            var num = Math.floor(Math.random() * (max - min)) + min;
+            return num;
         }
 
-        rotateCount = (timestamp - startTime) / 3;
-        
-        // If rotateCount gets over 359, set it to 'remainder of dividing by 360'
-        if(rotateCount > 359) {
-          rotateCount %= 360;
+        function draw(timestamp) {
+            if (!startTime) {
+                startTime = timestamp;
+            }
+
+            rotateCount = (timestamp - startTime) / 3;
+
+            if (rotateCount > 359) {
+                rotateCount %= 360;
+            }
+
+            spinner.style.transform = 'rotate(' + rotateCount + 'deg)';
+            rAF = requestAnimationFrame(draw);  //requestAnimationFrame recursively calls the draw function
         }
 
-        // Set the rotation of the div to be equal to rotateCount degrees
-        spinner.style.transform = 'rotate(' + rotateCount + 'deg)';
-
-        // Call the next frame in the animation
-        rAF = requestAnimationFrame(draw);
-      }
-
-      // Initially hide the spinner and results
-      result.style.display = 'none';
-      spinnerContainer.style.display = 'none';
-
-      // Reset the game to its initial state on restart
-      function reset() {
-        btn.style.display = 'block';
-        result.textContent = '';
+        // hide result and spinner in the beginning
         result.style.display = 'none';
-      }
-
-      // Start the game when the button is pressed
-
-      btn.addEventListener('click', start);
-
-      function start() {
-        // Start the spinner spinning
-        draw();
-        // Show the spinner and hide the button
-        spinnerContainer.style.display = 'block';
-        btn.style.display = 'none';
-        // run the setEndgame() function after a random number of seconds between 5 and 10
-        setTimeout(setEndgame, random(5000,10000));
-      }
-
-      // Function to allow players to take their turn when the time is right
-      function setEndgame() {
-        cancelAnimationFrame(rAF);
         spinnerContainer.style.display = 'none';
-        result.style.display = 'block';
-        result.textContent = 'PLAYERS GO!!';
 
-        document.addEventListener('keydown', keyHandler);
+        function reset() {
+            btn.style.display = 'block';
+            result.textContent = '';
+            result.style.display = 'none';
+        }
 
-        function keyHandler(e) {
-          console.log(e.key);
-          if(e.key === "a") {
-            result.textContent = 'Player 1 won!!';
-          } else if(e.key === "l") {
-            result.textContent = 'Player 2 won!!';
-          }
+        btn.addEventListener('click', start);
 
-          document.removeEventListener('keydown', keyHandler);
-          setTimeout(reset, 5000);
-        };
-      }
+        function start() {
+            draw(); //start the spinner spinning
+            spinnerContainer.style.display = 'block';
+            btn.style.display = 'none';
+            setTimeout(setEndgame, random(5000, 10000));    //set keypress listeners after a random time between 5 and 10 seconds
+        }
+
+        function setEndgame() {
+            cancelAnimationFrame(rAF);  //cancel animation
+            spinnerContainer.style.display = 'none';    //hide spinner
+            result.style.display = 'block';
+            result.textContent = 'PLAYERS GO!';
+
+            document.addEventListener('keydown', keyHandler);
+            function keyHandler(e) {
+                console.log(e.key);
+                if(e.key === 'a') {
+                    result.textContent = 'Player 1 won!';
+                } else if(e.key === 'l') {
+                    result.textContent = 'Player 2 won!';
+                }
+
+                document.removeEventListener('keydown', keyHandler);    //once a keypress is detected, remove the listener
+                setTimeout(reset, 5000);
+            };
+        }
     </script>
-  </body>
+</body>
+
 </html>
