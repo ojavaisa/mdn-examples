@@ -25,7 +25,9 @@
                 layers: L.mapquest.tileLayer('hybrid'),
                 zoom: 17
             });
+            
             map.addControl(L.mapquest.control({ position: 'bottomright' }));
+            
             L.marker([60.204783, 24.963115], {
                 icon: L.mapquest.icons.marker({
                     primaryColor: '#22407F',
