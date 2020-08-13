@@ -1,61 +1,69 @@
 <!DOCTYPE html>
 <html>
-  <head>
+
+<head>
     <meta charset="utf-8">
     <title>Canvas</title>
     <style>
-      body {
-        margin: 0;
-        overflow: hidden;
-      }
+        body {
+            margin: 0;
+            overflow: hidden;
+        }
     </style>
-  </head>
-  <body>
+</head>
+
+<body>
     <canvas class="myCanvas">
-      <p>Add suitable fallback here.</p>
+        <p>Add suitable fallback here.</p>
     </canvas>
 
     <script>
-      const canvas = document.querySelector('.myCanvas');
-      const width = canvas.width = window.innerWidth;
-      const height = canvas.height = window.innerHeight;
-      const ctx = canvas.getContext('2d');
+        const canvas = document.querySelector('.myCanvas');
+        const width = canvas.width = window.innerWidth;
+        const height = canvas.height = window.innerHeight;
+        const ctx = canvas.getContext('2d');
 
-      ctx.fillStyle = 'rgb(0,0,0)';
-      ctx.fillRect(0,0,width,height);
+        ctx.fillStyle = 'rgb(0,0,0)';
+        ctx.fillRect(0, 0, width, height);
 
-      ctx.translate(width/2,height/2);
+        ctx.translate(width / 2, height / 2);
 
-      let image = new Image();
-      image.src = 'walk-right.png';
-      image.onload = draw;
+        let image = new Image();
+        image.src = 'walk-right.png';
+        image.onload = draw;
 
-      let sprite = 0;
-      let posX = 0;
+        let sprite = 0; // sprite numbers 0 - 5
+        let posX = 0;
 
-      function draw() {
-        ctx.fillRect(-(width/2),-(height/2),width,height);
-        ctx.drawImage(image, (sprite*102), 0, 102, 148, 0+posX, -74, 102, 148);
+        function draw(){
+            ctx.fillRect(-(width/2), -(height/2), width, height);
 
-        if(posX % 13 === 0) {
-          if(sprite === 5) {
-            sprite = 0;
-          } else {
-            sprite++;
-          }
-        }
+            ctx.drawImage(image, (sprite*102), 0, 102, 148, 0+posX, -74, 102, 148);
+            /* the spritesheet image consists of six sprites, each 102px wide & 148px high
+            2. & 3. parameters define top-left corner of the slice to cut out: x = sprite number * 102, y = always 0 (in image file coordinates)
+            4. & 5. specify the size of the slice to cut out, always 102*148
+            6. & 7. specify top-left corner of box where slice is drawn on canvas, x = 0+position, y = -74 (in canvas coordinates)
+            8. & 9. specify the size of image on canvas, always 102*148 */
 
-        if(posX > width/2) {
-          newStartPos = -((width/2) + 102);
-          posX = Math.ceil(newStartPos / 13) * 13;
-          console.log(posX);
-        } else {
-          posX += 2;
-        }
+            if (posX % 13 === 0) {  // update sprite every 13 frames, ~5 frames per second
+                if (sprite === 5) { // if at sprite 5, wrap around
+                    sprite = 0;
+                } else {
+                    sprite++;
+                }
+            }
+            if (posX > width/2) {   // if character walked off the right side of screen
+                newStartPos = -((width/2) + 102);   // put character just left of the left side of screen 
+                posX = Math.ceil(newStartPos / 13) * 13; // set posX to nearest multiple of 13 to that position
+                console.log(posX);
+            } else {
+                posX += 2;
+            }
 
-        window.requestAnimationFrame(draw);
-      };
+            window.requestAnimationFrame(draw);
+        };
 
     </script>
-  </body>
+</body>
+
 </html>
